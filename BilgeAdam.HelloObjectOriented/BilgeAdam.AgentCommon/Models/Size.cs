@@ -2,8 +2,8 @@
 {
     public class Size
     {
-        public decimal chest;//göğüs
-        public decimal waist;//bel
-        public decimal hips;//basen
+        public decimal Chest { get; set; }//göğüs
+        public decimal Waist { get; set; }//bel
+        public decimal Hips { get; set; }//basen
     }
 }
