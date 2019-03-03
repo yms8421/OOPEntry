@@ -2,6 +2,7 @@
 using BilgeAdam.AgentCommon.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 
@@ -10,7 +11,7 @@ namespace BilgeAdam.Agent
     public partial class frmMain : Form
     {
         private List<string> countries;
-        private List<Model> models;
+        private BindingList<Model> models; //Listten farkı, verisi değiştiğinde kendisini kullanan componentlara değişiklik yapılması bildirimi gönderir
         public frmMain()//Constructor ***
         {
             InitializeComponent();
@@ -30,7 +31,7 @@ namespace BilgeAdam.Agent
                 "Venezuela"
             };
 
-            models = new List<Model>();
+            models = new BindingList<Model>();
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -94,7 +95,8 @@ namespace BilgeAdam.Agent
             models.Add(model3);
 
             //models.AddRange(new Model[] { model1, model2, model3 });
-            dgvModels.DataSource = models;
+            dgvModels.DataSource = models; //Binding list bir defa bağlandığı zaman tekrarlı bir şekilde güncelleme yapılmasına gerek duymaz. Bkz. Satır 122
+            UpdateStyle();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -116,8 +118,11 @@ namespace BilgeAdam.Agent
                 },
                 Status = GetStatus()
             };
+
             models.Add(newModel);
-            dgvModels.DataSource = models;
+            //dgvModels.DataSource = null; --> BindingList kullanımından ötürü gerek yok
+            //dgvModels.DataSource = models;
+            UpdateStyle();
         }
 
         private Gender GetGender()
@@ -136,6 +141,22 @@ namespace BilgeAdam.Agent
                 return MaritialStatus.Single;
             }
             return MaritialStatus.Married;
+        }
+
+        private void UpdateStyle()
+        {
+            foreach (DataGridViewRow row in dgvModels.Rows)
+            {
+                var boundObject = row.DataBoundItem as Model;
+                if (boundObject.Gender == Gender.Female)
+                {
+                    row.DefaultCellStyle.BackColor = System.Drawing.Color.Pink;
+                }
+                else
+                {
+                    row.DefaultCellStyle.BackColor = System.Drawing.Color.LightBlue;
+                }
+            }
         }
     }
 }
